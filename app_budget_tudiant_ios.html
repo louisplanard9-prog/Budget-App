@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="fr" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Mon Budget Louis iOS</title>
+  <style>
+    /* iOS Dark Theme Tokens & Global Styles */
+    :root {
+      --bg-color: #000000;
+      --card-bg: #1c1c1e;
+      --card-light: #2c2c2e;
+      --accent: #0a84ff;
+      --green: #30d158;
+      --orange: #ff9f0a;
+      --red: #ff453a;
+      --purple: #bf5af2;
+      --gray-text: #8e8e93;
+      --border-color: #38383a;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: #ffffff;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      min-height: 100vh;
+      padding-bottom: calc(80px + env(safe-area-inset-bottom));
+    }
+
+    .app-container {
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 0 16px;
+      position: relative;
+    }
+
+    /* Header */
+    header {
+      position: sticky;
+      top: 0;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      padding: 20px 4px 12px 4px;
+      z-index: 30;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .header-sub {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--gray-text);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .header-title {
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+
+    .badge-bourse {
+      background: rgba(10, 132, 255, 0.15);
+      color: var(--accent);
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    /* Cards */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 20px;
+      padding: 18px;
+      margin-top: 16px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card-hero {
+      background: linear-gradient(145deg, #1c1c1e 0%, #252528 100%);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .hero-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 14px;
+    }
+
+    .hero-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--gray-text);
+      text-transform: uppercase;
+    }
+
+    .hero-val-main {
+      font-size: 30px;
+      font-weight: 900;
+      letter-spacing: -1px;
+      margin-top: 2px;
+    }
+
+    .hero-val-sub {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--green);
+      margin-top: 2px;
+    }
+
+    /* Progress bar */
+    .progress-track {
+      width: 100%;
+      height: 10px;
+      background: var(--card-light);
+      border-radius: 10px;
+      overflow: hidden;
+      display: flex;
+    }
+
+    .progress-fill-green { background: var(--green); transition: width 0.3s; }
+    .progress-fill-accent { background: var(--accent); transition: width 0.3s; }
+
+    /* Checklist */
+    .checklist-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 12px;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 12px;
+      margin-top: 8px;
+      cursor: pointer;
+    }
+
+    .ios-checkbox {
+      appearance: none;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 2px solid var(--gray-text);
+      outline: none;
+      cursor: pointer;
+      position: relative;
+      transition: 0.2s;
+    }
+
+    .ios-checkbox:checked {
+      background-color: var(--green);
+      border-color: var(--green);
+    }
+
+    .ios-checkbox:checked::after {
+      content: '';
+      position: absolute;
+      top: 4px;
+      left: 7px;
+      width: 5px;
+      height: 9px;
+      border: solid white;
+      border-width: 0 2px 2px 0;
+      transform: rotate(45deg);
+    }
+
+    .checked-text {
+      text-decoration: line-through;
+      color: var(--gray-text);
+    }
+
+    /* Buttons */
+    .btn-action {
+      background: rgba(10, 132, 255, 0.2);
+      color: var(--accent);
+      border: none;
+      padding: 6px 14px;
+      border-radius: 16px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .btn-action:active {
+      transform: scale(0.96);
+    }
+
+    .btn-primary {
+      width: 100%;
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 14px;
+      border-radius: 14px;
+      font-size: 15px;
+      font-weight: 800;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    .btn-green {
+      background: var(--green);
+      color: black;
+    }
+
+    .btn-danger {
+      background: var(--card-light);
+      color: var(--red);
+    }
+
+    /* Range slider */
+    input[type=range] {
+      -webkit-appearance: none;
+      width: 100%;
+      background: var(--card-light);
+      height: 8px;
+      border-radius: 4px;
+      margin-top: 8px;
+    }
+
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      height: 24px;
+      width: 24px;
+      border-radius: 50%;
+      background: #ffffff;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+      cursor: pointer;
+    }
+
+    input[type=number], input[type=text] {
+      width: 100%;
+      background: var(--card-light);
+      color: white;
+      border: 1px solid var(--border-color);
+      padding: 12px;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 600;
+      outline: none;
+    }
+
+    input[type=number]:focus, input[type=text]:focus {
+      border-color: var(--accent);
+    }
+
+    /* Modals / Sheets */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(6px);
+      z-index: 50;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-sheet {
+      width: 100%;
+      max-width: 480px;
+      background: var(--card-bg);
+      border-top-left-radius: 24px;
+      border-top-right-radius: 24px;
+      padding: 24px 20px 32px 20px;
+      border-top: 1px solid var(--border-color);
+      transform: translateY(100%);
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .modal-overlay.active .modal-sheet {
+      transform: translateY(0);
+    }
+
+    .sheet-handle {
+      width: 36px;
+      height: 4px;
+      background: var(--gray-text);
+      opacity: 0.4;
+      border-radius: 2px;
+      margin: 0 auto 16px auto;
+    }
+
+    /* Bottom Navigation Bar */
+    .tab-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(28, 28, 30, 0.9);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      z-index: 40;
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+
+    .tab-bar-inner {
+      max-width: 480px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-around;
+      padding: 8px 0;
+    }
+
+    .tab-btn {
+      background: none;
+      border: none;
+      color: var(--gray-text);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-size: 10px;
+      font-weight: 700;
+      cursor: pointer;
+      gap: 4px;
+    }
+
+    .tab-btn.active {
+      color: var(--accent);
+    }
+
+    .tab-btn svg {
+      width: 22px;
+      height: 22px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      top: 16px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-50px);
+      background: var(--card-light);
+      border: 1px solid var(--border-color);
+      color: white;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 700;
+      z-index: 60;
+      opacity: 0;
+      transition: all 0.3s;
+      pointer-events: none;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+    <!-- HEADER -->
+    <header>
+      <div>
+        <div id="header-month" class="header-sub">NOVEMBRE 2026</div>
+        <div id="header-title" class="header-title">Budget Louis</div>
+      </div>
+      <div id="header-badge" class="badge-bourse">Bourse 145 €</div>
+    </header>
+
+    <!-- TAB 1: ACCUEIL -->
+    <section id="tab-home" class="tab-content active">
+      <!-- Hero Card -->
+      <div class="card card-hero">
+        <div class="hero-top">
+          <div>
+            <div class="hero-label">Reste global disponible</div>
+            <div id="hero-remaining" class="hero-val-main">0,00 €</div>
+          </div>
+          <div style="text-align: right;">
+            <div class="hero-label">Épargne prévue</div>
+            <div id="hero-savings" class="hero-val-sub">90,00 €</div>
+          </div>
+        </div>
+
+        <div class="progress-track">
+          <div id="bar-savings" class="progress-fill-green" style="width: 62%;"></div>
+          <div id="bar-spent" class="progress-fill-accent" style="width: 0%;"></div>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; font-size: 11px; color: var(--gray-text); margin-top: 8px; font-weight: 600;">
+          <span id="txt-spent-total">Dépensé : 0,00 €</span>
+          <span id="txt-potential-total">Épargne totale max : 90,00 €</span>
+        </div>
+      </div>
+
+      <!-- Checklist -->
+      <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+          <h2 style="font-size: 12px; font-weight: 800; color: var(--gray-text); text-transform: uppercase;">Checklist du mois</h2>
+          <span id="checklist-count" style="font-size: 11px; color: var(--gray-text);">0/2 faits</span>
+        </div>
+        <div id="checklist-container"></div>
+      </div>
+
+      <!-- Categories Envelopes -->
+      <div style="margin-top: 20px;">
+        <h2 style="font-size: 12px; font-weight: 800; color: var(--gray-text); text-transform: uppercase; margin-left: 4px; margin-bottom: 6px;">Envelopes de dépenses</h2>
+        <div id="categories-container"></div>
+      </div>
+
+      <!-- Recent Expenses -->
+      <div class="card" style="margin-bottom: 20px;">
+        <h2 style="font-size: 12px; font-weight: 800; color: var(--gray-text); text-transform: uppercase; margin-bottom: 10px;">Dernières dépenses</h2>
+        <div id="expenses-list"></div>
+      </div>
+    </section>
+
+    <!-- TAB 2: BILAN / 1ER DU MOIS -->
+    <section id="tab-bilan" class="tab-content">
+      <div class="card" style="border-color: rgba(48, 209, 88, 0.3);">
+        <div style="font-size: 11px; font-weight: 800; color: var(--green); text-transform: uppercase; margin-bottom: 4px;">Projection 1er du mois</div>
+        <h2 style="font-size: 20px; font-weight: 800; margin-bottom: 12px;">Total qui ira sur ton épargne</h2>
+
+        <div style="background: rgba(0,0,0,0.4); padding: 12px; border-radius: 12px; font-size: 13px; line-height: 1.8;">
+          <div style="display: flex; justify-content: space-between;">
+            <span style="color: var(--gray-text);">Épargne mensuelle de base</span>
+            <span id="bilan-base-savings" style="font-weight: 700;">90,00 €</span>
+          </div>
+          <div style="display: flex; justify-content: space-between;">
+            <span style="color: var(--gray-text);">Reliquat non dépensé des enveloppes</span>
+            <span id="bilan-unspent-bonus" style="font-weight: 700; color: var(--green);">+ 0,00 €</span>
+          </div>
+          <div style="border-top: 1px solid var(--border-color); margin-top: 8px; padding-top: 8px; display: flex; justify-content: space-between; font-weight: 800; font-size: 15px;">
+            <span>Épargne totale réelle</span>
+            <span id="bilan-total-savings" style="color: var(--green);">90,00 €</span>
+          </div>
+        </div>
+
+        <button onclick="archiveMonth()" class="btn-primary btn-green">
+          📥 Archiver ce mois & Démarrer le nouveau
+        </button>
+      </div>
+
+      <div style="margin-top: 20px;">
+        <h2 style="font-size: 12px; font-weight: 800; color: var(--gray-text); text-transform: uppercase; margin-left: 4px; margin-bottom: 6px;">Historique des mois</h2>
+        <div id="history-container"></div>
+      </div>
+    </section>
+
+    <!-- TAB 3: REGLAGES -->
+    <section id="tab-settings" class="tab-content">
+      <div class="card">
+        <label style="font-size: 12px; font-weight: 800; color: var(--gray-text); text-transform: uppercase; display: block; margin-bottom: 8px;">Revenu Mensuel (Bourse CROUS)</label>
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <input type="number" id="setting-income" value="145" onchange="updateIncome(this.value)">
+          <span style="font-size: 18px; font-weight: 800;">€</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+          <div>
+            <h2 style="font-size: 12px; font-weight: 800; color: var(--gray-text); text-transform: uppercase;">Budget des postes</h2>
+            <p style="font-size: 11px; color: var(--gray-text);">Ajuste les curseurs pour chaque enveloppe</p>
+          </div>
+          <button onclick="openCategoryModal()" class="btn-action">+ Ajouter</button>
+        </div>
+
+        <div id="settings-sliders-container"></div>
+
+        <div style="border-top: 1px solid var(--border-color); margin-top: 16px; padding-top: 12px; font-size: 13px;">
+          <div style="display: flex; justify-content: space-between; color: var(--gray-text); margin-bottom: 4px;">
+            <span>Total dépenses allouées :</span>
+            <span id="settings-total-allocated" style="color: white; font-weight: 700;">55,00 €</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; font-weight: 800; font-size: 14px;">
+            <span>Épargne automatique calculée :</span>
+            <span id="settings-auto-savings" style="color: var(--green);">90,00 €</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom: 24px;">
+        <button onclick="resetDefaults()" class="btn-primary btn-danger">Réinitialiser l'application (145 €)</button>
+      </div>
+    </section>
+  </div>
+
+  <!-- MODAL: ADD EXPENSE -->
+  <div id="modal-expense" class="modal-overlay" onclick="closeModalOnOverlay(event, 'modal-expense')">
+    <div class="modal-sheet">
+      <div class="sheet-handle"></div>
+      <h3 id="expense-modal-title" style="font-size: 17px; font-weight: 800; margin-bottom: 14px;">Nouvelle dépense</h3>
+      <div style="display: flex; flex-direction: column; gap: 12px;">
+        <div>
+          <label style="font-size: 11px; font-weight: 700; color: var(--gray-text); text-transform: uppercase; display: block; margin-bottom: 4px;">Montant (€)</label>
+          <input type="number" id="expense-amount" step="0.10" placeholder="Ex: 3,30 ou 4,50" style="font-size: 20px;">
+        </div>
+        <div>
+          <label style="font-size: 11px; font-weight: 700; color: var(--gray-text); text-transform: uppercase; display: block; margin-bottom: 4px;">Note (Optionnel)</label>
+          <input type="text" id="expense-note" placeholder="Ex: RU, snack boulangerie...">
+        </div>
+        <button onclick="confirmAddExpense()" class="btn-primary">Valider la dépense</button>
+        <button onclick="closeModal('modal-expense')" class="btn-primary btn-danger" style="margin-top: 0;">Annuler</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: ADD CATEGORY -->
+  <div id="modal-category" class="modal-overlay" onclick="closeModalOnOverlay(event, 'modal-category')">
+    <div class="modal-sheet">
+      <div class="sheet-handle"></div>
+      <h3 style="font-size: 17px; font-weight: 800; margin-bottom: 14px;">Nouveau poste de dépense</h3>
+      <div style="display: flex; flex-direction: column; gap: 12px;">
+        <div>
+          <label style="font-size: 11px; font-weight: 700; color: var(--gray-text); text-transform: uppercase; display: block; margin-bottom: 4px;">Nom de la catégorie</label>
+          <input type="text" id="cat-name" placeholder="Ex: Livres, Fast-food, Salle...">
+        </div>
+        <div style="display: flex; gap: 10px;">
+          <div style="flex: 1;">
+            <label style="font-size: 11px; font-weight: 700; color: var(--gray-text); text-transform: uppercase; display: block; margin-bottom: 4px;">Emoji</label>
+            <input type="text" id="cat-emoji" placeholder="🎮" style="text-align: center;">
+          </div>
+          <div style="flex: 1;">
+            <label style="font-size: 11px; font-weight: 700; color: var(--gray-text); text-transform: uppercase; display: block; margin-bottom: 4px;">Budget Initial (€)</label>
+            <input type="number" id="cat-budget" placeholder="15" step="5">
+          </div>
+        </div>
+        <button onclick="confirmAddCategory()" class="btn-primary">Créer la catégorie</button>
+        <button onclick="closeModal('modal-category')" class="btn-primary btn-danger" style="margin-top: 0;">Annuler</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div id="toast" class="toast">Dépense enregistrée</div>
+
+  <!-- BOTTOM TAB BAR -->
+  <nav class="tab-bar">
+    <div class="tab-bar-inner">
+      <button id="nav-home" class="tab-btn active" onclick="switchTab('home')">
+        <svg viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 00-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 00-1 1m-6 0h6"/></svg>
+        <span>Accueil</span>
+      </button>
+      <button id="nav-bilan" class="tab-btn" onclick="switchTab('bilan')">
+        <svg viewBox="0 0 24 24"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+        <span>1er du mois</span>
+      </button>
+      <button id="nav-settings" class="tab-btn" onclick="switchTab('settings')">
+        <svg viewBox="0 0 24 24"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><circle cx="12" cy="12" r="3"/></svg>
+        <span>Réglages</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- VANILLA JS SCRIPT - 100% STANDALONE & OFFLINE SAFE -->
+  <script>
+    // State
+    const defaultState = {
+      income: 145,
+      categories: [
+        { id: 'ru', name: 'Repas RU / Izly', emoji: '🍱', color: '#0a84ff', budget: 20, spent: 0 },
+        { id: 'snacks', name: 'Snacks', emoji: '🥐', color: '#ff9f0a', budget: 15, spent: 0 },
+        { id: 'sorties', name: 'Sorties & Loisirs', emoji: '🎉', color: '#bf5af2', budget: 20, spent: 0 }
+      ],
+      checklist: [
+        { id: 'epargne', label: 'Virement épargne (Livret A/Jeune)', checked: false, amount: 90 },
+        { id: 'izly', label: 'Rechargement Izly (RU)', checked: false, amount: 20 }
+      ],
+      expenses: [],
+      history: [],
+      selectedCatForExpense: null
+    };
+
+    let state = JSON.parse(JSON.stringify(defaultState));
+
+    // Load/Save
+    function loadState() {
+      const saved = localStorage.getItem('louis_vanilla_budget_app');
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          state.income = parsed.income ?? defaultState.income;
+          state.categories = parsed.categories ?? defaultState.categories;
+          state.checklist = parsed.checklist ?? defaultState.checklist;
+          state.expenses = parsed.expenses ?? defaultState.expenses;
+          state.history = parsed.history ?? defaultState.history;
+        } catch(e) {
+          console.error("Storage error:", e);
+        }
+      }
+    }
+
+    function saveState() {
+      localStorage.setItem('louis_vanilla_budget_app', JSON.stringify({
+        income: state.income,
+        categories: state.categories,
+        checklist: state.checklist,
+        expenses: state.expenses,
+        history: state.history
+      }));
+      render();
+    }
+
+    // Calculations
+    function getTotalAllocated() {
+      return state.categories.reduce((acc, c) => acc + (Number(c.budget) || 0), 0);
+    }
+
+    function getEstimatedSavings() {
+      return state.income - getTotalAllocated();
+    }
+
+    function getTotalSpent() {
+      return state.categories.reduce((acc, c) => acc + (Number(c.spent) || 0), 0);
+    }
+
+    function getUnspentCategoriesTotal() {
+      return state.categories.reduce((acc, c) => {
+        const diff = (Number(c.budget) || 0) - (Number(c.spent) || 0);
+        return acc + (diff > 0 ? diff : 0);
+      }, 0);
+    }
+
+    function getPotentialTotalSavings() {
+      return getEstimatedSavings() + getUnspentCategoriesTotal();
+    }
+
+    function getTotalRemaining() {
+      return state.income - getTotalSpent() - getEstimatedSavings();
+    }
+
+    // Formatters
+    function formatEuro(val) {
+      const num = Number(val) || 0;
+      return num.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' });
+    }
+
+    function formatDate(isoStr) {
+      const d = new Date(isoStr);
+      return d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+    }
+
+    // Toast
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2200);
+    }
+
+    // Tab Switcher
+    function switchTab(tabName) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+      
+      document.getElementById('tab-' + tabName).classList.add('active');
+      document.getElementById('nav-' + tabName).classList.add('active');
+
+      const titles = { home: 'Budget Louis', bilan: 'Bilan & 1er du mois', settings: 'Réglages' };
+      document.getElementById('header-title').textContent = titles[tabName] || 'Budget Louis';
+    }
+
+    // Rendering Logic
+    function render() {
+      // Header & Hero
+      const now = new Date();
+      const monthStr = now.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' }).toUpperCase();
+      document.getElementById('header-month').textContent = monthStr;
+      document.getElementById('header-badge').textContent = `Bourse ${state.income} €`;
+
+      const remaining = getTotalRemaining();
+      const savings = getEstimatedSavings();
+      const spentTotal = getTotalSpent();
+      const potentialSavings = getPotentialTotalSavings();
+
+      document.getElementById('hero-remaining').textContent = formatEuro(remaining);
+      document.getElementById('hero-remaining').style.color = remaining >= 0 ? '#ffffff' : 'var(--red)';
+      document.getElementById('hero-savings').textContent = formatEuro(savings);
+      document.getElementById('txt-spent-total').textContent = `Dépensé : ${formatEuro(spentTotal)}`;
+      document.getElementById('txt-potential-total').textContent = `Épargne totale max : ${formatEuro(potentialSavings)}`;
+
+      // Progress bar widths
+      const spentPct = state.income > 0 ? Math.min(100, (spentTotal / state.income) * 100) : 0;
+      const savPct = state.income > 0 ? Math.min(100, (savings / state.income) * 100) : 0;
+      document.getElementById('bar-savings').style.width = savPct + '%';
+      document.getElementById('bar-spent').style.width = spentPct + '%';
+
+      // Checklist sync amounts
+      const epItem = state.checklist.find(c => c.id === 'epargne');
+      if (epItem) epItem.amount = savings;
+      const ruCat = state.categories.find(c => c.id === 'ru');
+      const izItem = state.checklist.find(c => c.id === 'izly');
+      if (izItem && ruCat) izItem.amount = ruCat.budget;
+
+      // Render Checklist
+      const checklistContainer = document.getElementById('checklist-container');
+      const doneCount = state.checklist.filter(c => c.checked).length;
+      document.getElementById('checklist-count').textContent = `${doneCount}/${state.checklist.length} faits`;
+      
+      checklistContainer.innerHTML = state.checklist.map(item => `
+        <div class="checklist-item" onclick="toggleChecklist('${item.id}')">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <input type="checkbox" class="ios-checkbox" ${item.checked ? 'checked' : ''} onclick="event.stopPropagation(); toggleChecklist('${item.id}')">
+            <span class="${item.checked ? 'checked-text' : ''}" style="font-size: 13px; font-weight: 600;">${item.label}</span>
+          </div>
+          <span style="font-size: 11px; font-weight: 700; color: var(--gray-text); background: var(--card-light); padding: 2px 8px; border-radius: 6px;">
+            ${item.amount ? formatEuro(item.amount) : 'Action'}
+          </span>
+        </div>
+      `).join('');
+
+      // Render Categories Envelopes
+      const categoriesContainer = document.getElementById('categories-container');
+      categoriesContainer.innerHTML = state.categories.map(cat => {
+        const catSpent = Number(cat.spent) || 0;
+        const catBudget = Number(cat.budget) || 0;
+        const left = catBudget - catSpent;
+        const pct = catBudget > 0 ? Math.min(100, (catSpent / catBudget) * 100) : (catSpent > 0 ? 100 : 0);
+        const barColor = pct > 100 ? 'var(--red)' : pct > 75 ? 'var(--orange)' : 'var(--green)';
+
+        return `
+          <div class="card" style="padding: 14px; margin-top: 10px;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <div style="width: 38px; height: 38px; border-radius: 12px; background: ${cat.color}25; color: ${cat.color}; display: flex; align-items: center; justify-content: center; font-size: 18px;">
+                  ${cat.emoji}
+                </div>
+                <div>
+                  <h3 style="font-size: 15px; font-weight: 800;">${cat.name}</h3>
+                  <p style="font-size: 11px; color: var(--gray-text); margin-top: 1px;">
+                    Budget : ${formatEuro(catBudget)} • Dépensé : ${formatEuro(catSpent)}
+                  </p>
+                </div>
+              </div>
+              <button class="btn-action" onclick="openExpenseModal('${cat.id}')">+ Dépense</button>
+            </div>
+
+            <div class="progress-track" style="height: 8px;">
+              <div style="width: ${pct}%; background: ${barColor}; transition: width 0.3s;"></div>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; font-size: 11px; margin-top: 6px;">
+              <span style="font-weight: 700; color: ${left >= 0 ? 'var(--gray-text)' : 'var(--red)'}">
+                ${left >= 0 ? 'Reste : ' + formatEuro(left) : 'Dépassement : ' + formatEuro(Math.abs(left))}
+              </span>
+              <span style="color: var(--gray-text); font-weight: 600;">${Math.round(pct)}%</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      // Render Recent Expenses
+      const expensesList = document.getElementById('expenses-list');
+      if (state.expenses.length === 0) {
+        expensesList.innerHTML = `<div style="font-size: 12px; color: var(--gray-text); text-align: center; padding: 10px 0;">Aucune dépense enregistrée ce mois-ci.</div>`;
+      } else {
+        expensesList.innerHTML = state.expenses.slice().reverse().slice(0, 5).map(exp => {
+          const cat = state.categories.find(c => c.id === exp.categoryId);
+          return `
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border-color);">
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <span style="font-size: 16px;">${cat ? cat.emoji : '💸'}</span>
+                <div>
+                  <div style="font-size: 13px; font-weight: 700;">${exp.note || (cat ? cat.name : 'Dépense')}</div>
+                  <div style="font-size: 10px; color: var(--gray-text);">${formatDate(exp.date)}</div>
+                </div>
+              </div>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span style="font-size: 13px; font-weight: 800; color: var(--red);">-${formatEuro(exp.amount)}</span>
+                <button onclick="deleteExpense(${exp.id})" style="background: none; border: none; color: var(--gray-text); font-size: 14px; cursor: pointer; padding: 2px;">✕</button>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      // Render Bilan Tab
+      document.getElementById('bilan-base-savings').textContent = formatEuro(savings);
+      document.getElementById('bilan-unspent-bonus').textContent = `+ ${formatEuro(getUnspentCategoriesTotal())}`;
+      document.getElementById('bilan-total-savings').textContent = formatEuro(potentialSavings);
+
+      const historyContainer = document.getElementById('history-container');
+      if (state.history.length === 0) {
+        historyContainer.innerHTML = `<div class="card" style="font-size: 12px; color: var(--gray-text); text-align: center;">Aucun mois archivé pour le moment.</div>`;
+      } else {
+        historyContainer.innerHTML = state.history.map(h => `
+          <div class="card" style="margin-top: 10px; padding: 14px;">
+            <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; margin-bottom: 8px;">
+              <div>
+                <div style="font-size: 14px; font-weight: 800;">${h.monthName}</div>
+                <div style="font-size: 11px; color: var(--gray-text);">Revenu : ${formatEuro(h.income)}</div>
+              </div>
+              <div style="text-align: right;">
+                <div style="font-size: 10px; color: var(--gray-text);">Épargné</div>
+                <div style="font-size: 14px; font-weight: 800; color: var(--green);">${formatEuro(h.savedTotal)}</div>
+              </div>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      // Render Settings Sliders
+      document.getElementById('setting-income').value = state.income;
+      const slidersContainer = document.getElementById('settings-sliders-container');
+      slidersContainer.innerHTML = state.categories.map(cat => `
+        <div style="margin-top: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 10px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; font-size: 13px; font-weight: 700;">
+            <span>${cat.emoji} ${cat.name}</span>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="color: var(--accent); font-weight: 800;">${formatEuro(cat.budget)}</span>
+              <button onclick="deleteCategory('${cat.id}')" style="background: none; border: none; color: var(--gray-text); font-size: 13px; cursor: pointer;">🗑️</button>
+            </div>
+          </div>
+          <input type="range" min="0" max="100" step="5" value="${cat.budget}" oninput="updateCatBudget('${cat.id}', this.value)">
+        </div>
+      `).join('');
+
+      document.getElementById('settings-total-allocated').textContent = formatEuro(getTotalAllocated());
+      document.getElementById('settings-auto-savings').textContent = formatEuro(getEstimatedSavings());
+    }
+
+    // Actions
+    function toggleChecklist(id) {
+      const item = state.checklist.find(c => c.id === id);
+      if (item) {
+        item.checked = !item.checked;
+        saveState();
+      }
+    }
+
+    function openExpenseModal(catId) {
+      state.selectedCatForExpense = catId;
+      const cat = state.categories.find(c => c.id === catId);
+      document.getElementById('expense-modal-title').textContent = `Nouvelle dépense : ${cat ? cat.name : ''}`;
+      document.getElementById('expense-amount').value = '';
+      document.getElementById('expense-note').value = '';
+      document.getElementById('modal-expense').classList.add('active');
+    }
+
+    function confirmAddExpense() {
+      const amt = parseFloat(document.getElementById('expense-amount').value);
+      if (isNaN(amt) || amt <= 0) {
+        showToast('Entre un montant valide !');
+        return;
+      }
+      const note = document.getElementById('expense-note').value.trim();
+      const cat = state.categories.find(c => c.id === state.selectedCatForExpense);
+      if (cat) {
+        cat.spent = (Number(cat.spent) || 0) + amt;
+      }
+      state.expenses.push({
+        id: Date.now(),
+        categoryId: state.selectedCatForExpense,
+        amount: amt,
+        note: note,
+        date: new Date().toISOString()
+      });
+      closeModal('modal-expense');
+      saveState();
+      showToast(`Dépense de ${formatEuro(amt)} enregistrée`);
+    }
+
+    function deleteExpense(expId) {
+      const idx = state.expenses.findIndex(e => e.id === expId);
+      if (idx !== -1) {
+        const exp = state.expenses[idx];
+        const cat = state.categories.find(c => c.id === exp.categoryId);
+        if (cat) cat.spent = Math.max(0, cat.spent - exp.amount);
+        state.expenses.splice(idx, 1);
+        saveState();
+        showToast('Dépense supprimée');
+      }
+    }
+
+    function openCategoryModal() {
+      document.getElementById('cat-name').value = '';
+      document.getElementById('cat-emoji').value = '🎮';
+      document.getElementById('cat-budget').value = '15';
+      document.getElementById('modal-category').classList.add('active');
+    }
+
+    function confirmAddCategory() {
+      const name = document.getElementById('cat-name').value.trim();
+      if (!name) {
+        showToast('Nom obligatoire !');
+        return;
+      }
+      const emoji = document.getElementById('cat-emoji').value.trim() || '💸';
+      const budget = parseFloat(document.getElementById('cat-budget').value) || 0;
+
+      state.categories.push({
+        id: 'custom_' + Date.now(),
+        name: name,
+        emoji: emoji,
+        color: '#0a84ff',
+        budget: budget,
+        spent: 0
+      });
+
+      closeModal('modal-category');
+      saveState();
+      showToast('Nouveau poste créé !');
+    }
+
+    function deleteCategory(catId) {
+      if (state.categories.length <= 1) {
+        showToast('Garde au moins un poste !');
+        return;
+      }
+      state.categories = state.categories.filter(c => c.id !== catId);
+      state.expenses = state.expenses.filter(e => e.categoryId !== catId);
+      saveState();
+      showToast('Poste supprimé');
+    }
+
+    function updateIncome(val) {
+      state.income = Number(val) || 0;
+      saveState();
+    }
+
+    function updateCatBudget(catId, val) {
+      const cat = state.categories.find(c => c.id === catId);
+      if (cat) {
+        cat.budget = Number(val) || 0;
+        saveState();
+      }
+    }
+
+    function archiveMonth() {
+      const now = new Date();
+      const monthName = now.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
+      state.history.unshift({
+        id: Date.now(),
+        monthName: monthName,
+        income: state.income,
+        savedTotal: getPotentialTotalSavings()
+      });
+      state.categories.forEach(c => c.spent = 0);
+      state.checklist.forEach(c => c.checked = false);
+      state.expenses = [];
+      saveState();
+      switchTab('home');
+      showToast('Mois archivé & remise à zéro effectuée !');
+    }
+
+    function resetDefaults() {
+      state = JSON.parse(JSON.stringify(defaultState));
+      saveState();
+      showToast('Réinitialisé à 145 €');
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('active');
+    }
+
+    function closeModalOnOverlay(e, id) {
+      if (e.target.id === id) closeModal(id);
+    }
+
+    // Init
+    window.onload = function() {
+      loadState();
+      render();
+    };
+  </script>
+</body>
+</html>
